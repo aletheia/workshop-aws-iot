@@ -1,0 +1,51 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+#field {
+
+    background: #fafafa;
+    border: 2px solid #ddd;
+    width: 1000px;
+    height: 500px;
+    margin: 50px auto;
+    overflow: hidden;
+    position: relative;
+
+}
+
+.drone {
+
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 475px;
+    top: 225px;
+    background: url("../img/drone.png") no-repeat;
+    background-size: 100% 100%;
+
+}
+
+.drone:after {
+
+    content: attr(data-power);
+    display: block;
+    width: 100%;
+    line-height: 50px;
+    color: white;
+    text-align: center;
+    font-size: 80%;
+
+}
+
+.drone.alarm:after {
+
+    color: red;
+
+}
