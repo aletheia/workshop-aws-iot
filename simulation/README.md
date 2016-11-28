@@ -20,9 +20,9 @@ The simulation is based on the AWS IoT runtime environment. You will need to set
 * [AWS IAM](https://aws.amazon.com/iam/): a valid IAM Role must be connected to the Cognito Identity Pool un-authenticated role.
 * [AWS IoT](https://aws.amazon.com/iot/): an IoT project must be configured, although no actual Thing or Certificate needs to be defined for the simulation to work properly.
 
-Specifically, you will need to configure the JS Client with the *Cognito Identity Pool ID* and the *IoT Custom Endpoint*.
+Specifically, you will need to configure the JS Client with the **Cognito Identity Pool ID** and the **IoT Custom Endpoint**.
 
-You can find such parameters in the simulation/js/main.js file:
+You can find such parameters in the *simulation/js/main.js* file:
 
     var AWS_IOT_ENDPOINT = 'YOUR_IOT_CUSTOM_ENDPOINT';
     AWS.config.region = 'eu-west-1';
@@ -57,7 +57,7 @@ You can launch a local Python webserver as follows:
     $ cd simulation
     $ ./run-simulation.sh
 
-You can view the web simulator by visiting *http://localhost:8080/* in your browser.
+You can view the web simulator by visiting **http://localhost:8080/** in your browser.
 
 ## MQTT Topics Overview
 
@@ -70,9 +70,9 @@ Instead of using real IoT Things, the web simulator subscribes and publishes mes
 
 Here are the supported commands:
 
-* *Alarm command*: the receiving Drone goes into the "alarm" status.
-* *Destroy command*: the receiving Drone quits the simulation.
-* *Power command*: the receiving Drone updates its power to a given value.
+* **Alarm command**: the receiving Drone goes into the "alarm" status.
+* **Destroy command**: the receiving Drone quits the simulation.
+* **Power command**: the receiving Drone updates its power to a given value.
 
 Example of Alarm command:
 
