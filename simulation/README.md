@@ -2,6 +2,8 @@
 
 This one-page webapp is meant to simulate a fleet of Things in the context of [AWS IoT](https://aws.amazon.com/iot/).
 
+![Simulator Screenshot](iot-simulation.png?raw=true)
+
 ## Context
 
 Each Thing is a Drone, moving freely within a rectangular field and regularly sending data about its position, speed and environmental status.
