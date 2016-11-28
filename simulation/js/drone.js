@@ -1,3 +1,7 @@
+/**
+ * @author Alex Casalboni <alex@cloudacademy.com>
+ */
+
 function Field($el) {
     this.$el = $el;
     this.width = 1000;

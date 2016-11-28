@@ -1,10 +1,13 @@
+/**
+ * @author Alex Casalboni <alex@cloudacademy.com>
+ */
 (function($) {
 
     // Initialize credentials and endpoints
-    var AWS_IOT_ENDPOINT = 'YOUR_IOT_ENDPOINT';
-    AWS.config.region = 'eu-west-1'; // Region
+    var AWS_IOT_ENDPOINT = 'YOUR_IOT_CUSTOM_ENDPOINT';
+    AWS.config.region = 'eu-west-1';
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'YOUR_COGNITO_POOL_ID',
+        IdentityPoolId: 'YOUR_COGNITO_IDENTITY_POOL_ID',
     });
 
     AWS.config.credentials.get(function(err) {
