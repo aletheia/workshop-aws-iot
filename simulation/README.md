@@ -28,6 +28,26 @@ You can find such parameters in the simulation/js/main.js file:
         IdentityPoolId: 'YOUR_COGNITO_IDENTITY_POOL_ID',
     });
 
+Here is the basic IAM Role you may want to start from:
+
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "iot:Connect",
+                    "iot:Publish",
+                    "iot:Subscribe",
+                    "iot:Receive",
+                    "iot:GetThingShadow",
+                    "iot:UpdateThingShadow"
+                ],
+                "Resource": "*"
+           }
+        ]
+    }
+
 ## How to run the simulation
 
 You can launch a local Python webserver as follows:
