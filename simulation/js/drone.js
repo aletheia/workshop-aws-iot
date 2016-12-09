@@ -52,8 +52,7 @@ function Drone($el, field) {
     this.$el = $el;
     this.width = 50;
     this.height = 50;
-    this.power = Math.round(Math.random() * 5);
-    this.$el.attr('data-power', this.power);
+    this.setPower(Math.round(Math.random() * 5));
     this.field = field;
     this.timer = 3000;
     this.initSpeed();
@@ -139,6 +138,11 @@ Drone.prototype.destroy = function() {
     this.field.removeDrone(this);
 };
 
+Drone.prototype.setPower = function(value) {
+    this.power = value;
+    this.$el.attr('data-power', value);
+}
+
 Drone.prototype.onMessage = function(message) {
     console.log("Drone ", this.id, " received message ", message);
     switch (message.action) {
@@ -147,7 +151,7 @@ Drone.prototype.onMessage = function(message) {
         case 'destroy':
             return this.destroy();
         case 'power':
-            return this.power = message.value;
+            return this.setPower(message.value);
         default:
             return console.error("Unrecognised msg:", message)
     }
