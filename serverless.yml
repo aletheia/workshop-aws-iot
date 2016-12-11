@@ -1,0 +1,59 @@
+service: aws-lai-workshop
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+
+resources:
+  Resources:
+    DroidsRolePolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: aws_lai_workshop_policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - iot:Connect
+            - iot:Publish
+            - iot:Subscribe
+            - iot:Receive
+            - iot:GetThingShadow
+            - iot:UpdateThingShadow
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - mobileanalytics:PutEvents
+            - cognito-sync:*
+            - cognito-identity:*
+            Resource:
+            - "*"
+        Roles:
+        - Ref: DroidsRole
+    DroidsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: aws_lai_workshop_role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+    DroidsNotifyTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        DisplayName: "SNS Topic to Notify through e-mail/sms"
+        TopicName: "DroidsTopic"
+        # Subscription property will be set during workshop
+  Outputs:
+    DroidsTopicArn:
+      Description: "ARN of SNS topic used to notify iot things"
+      Value:
+        Ref: DroidsNotifyTopic
+    DroidsRoleName:
+      Description: IAM Role associated to this workshop
+      Value:
+        Ref: DroidsRole
