@@ -52,11 +52,20 @@ resources:
       Type: "AWS::IoT::Thing"
       Properties:
         ThingName: "DroidSampleThing"
+    DroidsDataSourceStream:
+      Type: AWS::Kinesis::Stream
+      Properties:
+        Name: droids-data-src-stream
+        ShardCount: 1
   Outputs:
     DroidsTopicArn:
       Description: "ARN of SNS topic used to notify iot things"
       Value:
         Ref: DroidsNotifyTopic
+    DroidsDataSourceStreamName:
+      Description: "Name of the source stream for IoT data"
+      Value:
+        Ref: DroidsDataSourceStream
     DroidsRoleName:
       Description: IAM Role associated to this workshop
       Value:
