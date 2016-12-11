@@ -21,7 +21,7 @@ const handleIdentityPoolOperation = (event, context, callback) => {
     function respond(responseStatus, responseData, physicalResourceId) {
         const responseBody = JSON.stringify({
             Status: responseStatus,
-            Reason: `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
+            Reason: responseData.error || `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
             PhysicalResourceId: physicalResourceId || context.logStreamName,
             StackId: event.StackId,
             RequestId: event.RequestId,
@@ -80,7 +80,7 @@ const handleIdentityPoolOperation = (event, context, callback) => {
           IdentityPoolId: poolId
       };
       cognitoidentity.deleteIdentityPool(params).promise()
-      .then(data => respond(SUCCESS, data, data.IdentityPoolId))
+      .then(data => respond(SUCCESS, data))
       .catch(error => respond(FAILED, {message: error}));
     }
 
