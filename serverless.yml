@@ -48,6 +48,10 @@ resources:
         DisplayName: "SNS Topic to Notify through e-mail/sms"
         TopicName: "DroidsTopic"
         # Subscription property will be set during workshop
+    Droids:
+      Type: "AWS::IoT::Thing"
+      Properties:
+        ThingName: "DroidSampleThing"
   Outputs:
     DroidsTopicArn:
       Description: "ARN of SNS topic used to notify iot things"
