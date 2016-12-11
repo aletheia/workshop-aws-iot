@@ -89,13 +89,13 @@ const handleIdentityPoolOperation = (event, context, callback) => {
 
     switch(event.RequestType) {
         case 'Create':
-            createIdentityPool(event.LogicalResourceId,event.ResourceProperties.IAMRole);
+            createIdentityPool(event.ResourceProperties.IdentityPoolName,event.ResourceProperties.IAMRole);
         break;
         case 'Delete':
             deleteIdentityPool(event.PhysicalResourceId);
         break;
         case 'Update':
-            createIdentityPool(event.LogicalResourceId,event.ResourceProperties.IAMRole);
+            createIdentityPool(event.ResourceProperties.IdentityPoolName,event.ResourceProperties.IAMRole);
             deleteIdentityPool(event.PhysicalResourceId);
         break;
         default:
