@@ -56,7 +56,7 @@ resources:
       Properties:
         ServiceToken:
           "Fn::GetAtt": ["CognitoManagerFunction","Arn"]
-        IdentityPoolName: AWSLAIWorkshopIdentityPool
+        IdentityPoolName: aws_lai_workshop_drones_identity_pool
         IAMRole:
           "Fn::GetAtt": ["CognitoManagerFunctionRole","Arn"]
     DroidsRolePolicy:
