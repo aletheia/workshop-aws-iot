@@ -1,4 +1,3 @@
-AWSTemplateFormatVersion: "2010-09-09"
 Resources:
   CognitoManagerFunctionRolePolicy:
     Type: AWS::IAM::Policy
@@ -44,7 +43,7 @@ Resources:
         "Fn::GetAtt": ["CognitoManagerFunctionRole","Arn"]
       Code:
         ZipFile: |
-          'use strict';var https=require('https'),url=require('url'),AWS=require('aws-sdk'),cognitoidentity=new AWS.CognitoIdentity,SUCCESS='SUCCESS',FAILED='FAILED',UNKNOWN={Error:'Unknown operation'},requestTypes=['Create','Update','Delete'],handleIdentityPoolOperation=function handleIdentityPoolOperation(a,b,c){function d(g,h,i){var j=JSON.stringify({Status:g,Reason:'See the details in CloudWatch Log Stream: '+b.logStreamName,PhysicalResourceId:i||b.logStreamName,StackId:a.StackId,RequestId:a.RequestId,LogicalResourceId:a.LogicalResourceId,Data:h});console.log('Response body:\n',j);var k=url.parse(a.ResponseURL),l={hostname:k.hostname,port:443,path:k.path,method:'PUT',headers:{'content-type':'','content-length':j.length}};return new Promise(function(m,n){var o=https.request(l,m);o.on('error',function(p){return n('send(..) failed executing https.request(..): '+p)}),o.write(j),o.end()}).then(function(){return c(g===FAILED?g:null,h)}).catch(c)}function e(g,h){cognitoidentity.createIdentityPool({AllowUnauthenticatedIdentities:!0,IdentityPoolName:g}).promise().then(function(i){var j={IdentityPoolId:i.IdentityPoolId,Roles:{authenticated:h,unauthenticated:h}};return cognitoidentity.setIdentityPoolRoles(j).promise()}).then(function(i){return d(SUCCESS,i,i.IdentityPoolId)}).catch(function(i){return d(FAILED,{message:i})})}function f(g){cognitoidentity.deleteIdentityPool({IdentityPoolId:g}).promise().then(function(h){return d(SUCCESS,h,h.IdentityPoolId)}).catch(function(h){return d(FAILED,{message:h})})}switch(console.log('Performing operation '+a.RequestType+' on Cognito Identity Pool '+a.LogicalResourceId),a.RequestType){case'Create':e(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole);break;case'Delete':f(a.PhysicalResourceId);break;case'Update':e(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole),f(a.PhysicalResourceId);break;default:c('Something went wrong');}};exports.handler=handleIdentityPoolOperation;
+          'use strict';var response=require('cfn-response'),AWS=require('aws-sdk'),cognitoidentity=new AWS.CognitoIdentity,requestTypes=['Create','Update','Delete'];exports.handler=function(a,b){function c(f,g){return cognitoidentity.createIdentityPool({AllowUnauthenticatedIdentities:!0,IdentityPoolName:f}).promise().then(function(h){var i={IdentityPoolId:h.IdentityPoolId,Roles:{authenticated:g,unauthenticated:g}};return cognitoidentity.setIdentityPoolRoles(i).promise()})}function d(f){return cognitoidentity.deleteIdentityPool({IdentityPoolId:f}).promise()}console.log('Response body:\n',responseBody),console.log('Performing operation '+a.RequestType+' on Cognito Identity Pool '+a.LogicalResourceId);var e;switch(a.RequestType){case'Create':e=c(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole);break;case'Delete':e=d(a.PhysicalResourceId);break;case'Update':e=c(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole).then(function(){return d(a.PhysicalResourceId)});break;default:e=Promise.reject('Unkonwn method '+a.RequestType);}e.then(function(f){response.send(a,b,response.SUCCESS,{IdentityPoolId:f.IdentityPoolId})}).catch(function(f){response.send(a,b,response.FAILED,{message:f})})};
   CognitoIdentity:
     Type: Custom::CognitoIdentity
     Properties:
@@ -123,7 +122,3 @@ Outputs:
   CognitoManagerFunctionRole:
     Value:
       "Fn::GetAtt": ["CognitoManagerFunctionRole","Arn"]
-  DroidsIdentityPool:
-    Description: Identity pool related to droids swarm
-    Value:
-      "Fn::GetAtt": ["CognitoIdentity","PhysicalResourceId"]
