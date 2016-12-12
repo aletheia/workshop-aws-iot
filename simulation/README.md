@@ -20,6 +20,10 @@ The simulation is based on the AWS IoT runtime environment. You will need to set
 * [AWS IAM](https://aws.amazon.com/iam/): a valid IAM Role must be connected to the Cognito Identity Pool un-authenticated role.
 * [AWS IoT](https://aws.amazon.com/iot/): an IoT project must be configured, although no actual Thing or Certificate needs to be defined for the simulation to work properly.
 
+You can launch a pre-configured CloudFormation Stack by clicking on this button:
+
+[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=IoTWorkshop&templateURL=https://raw.githubusercontent.com/aletheia/aws-lai-iot-workshop/master/templates/aws-lai-iot-workshop-cf-template.yml)
+
 Specifically, you will need to configure the JS Client with the **Cognito Identity Pool ID** and the **IoT Custom Endpoint**.
 
 You can find such parameters in the *simulation/js/main.js* file:
