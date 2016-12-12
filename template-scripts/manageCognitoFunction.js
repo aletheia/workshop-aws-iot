@@ -1,108 +1,59 @@
 'use strict';
-
-const https = require('https');
-const url = require('url');
+var response = require('cfn-response');
 const AWS = require('aws-sdk');
 const cognitoidentity = new AWS.CognitoIdentity();
-const SUCCESS = 'SUCCESS';
-const FAILED = 'FAILED';
+const requestTypes = ['Create', 'Update', 'Delete'];
+exports.handler = (event, context, callback) => {
+    console.log('Response body:\n', responseBody);
 
-const UNKNOWN = {
-	Error: 'Unknown operation'
-};
-const requestTypes = [
-	'Create',
-	'Update',
-	'Delete'
-];
-
-const handleIdentityPoolOperation = (event, context, callback) => {
-
-    function respond(responseStatus, responseData, physicalResourceId) {
-        const responseBody = JSON.stringify({
-            Status: responseStatus,
-            Reason: responseData.error || `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
-            PhysicalResourceId: physicalResourceId || context.logStreamName,
-            StackId: event.StackId,
-            RequestId: event.RequestId,
-            LogicalResourceId: event.LogicalResourceId,
-            Data: responseData
-        });
-
-        console.log('Response body:\n', responseBody);
-
-        const parsedUrl = url.parse(event.ResponseURL);
-        const options = {
-            hostname: parsedUrl.hostname,
-            port: 443,
-            path: parsedUrl.path,
-            method: 'PUT',
-            headers: {
-                'content-type': '',
-                'content-length': responseBody.length
-            }
-        };
-
-        return new Promise((resolve, reject) => {
-                const request = https
-                    .request(options, resolve);
-
-                request.on('error', error => reject(`send(..) failed executing https.request(..): ${error}`));
-                request.write(responseBody);
-                request.end();
-            })
-            .then(() => callback(responseStatus === FAILED ? responseStatus : null, responseData))
-            .catch(callback);
-    }
-
-    function createIdentityPool(poolId,iamRole) {
+    function createIdentityPool(poolId, iamRole) {
         var params = {
             AllowUnauthenticatedIdentities: true,
             IdentityPoolName: poolId
         };
-        cognitoidentity.createIdentityPool(params).promise()
-		    .then(data => {
-		        var setRoleParams ={
-		            IdentityPoolId:data.IdentityPoolId,
-		            Roles: {
-		                authenticated:iamRole,
-		                unauthenticated:iamRole
-		            }
-		        }
-		        return cognitoidentity.setIdentityPoolRoles(setRoleParams).promise()
-		    })
-		    .then(data => respond(SUCCESS, data, data.IdentityPoolId))
-		    .catch(error => respond(FAILED, {message: error}));
+        return cognitoidentity.createIdentityPool(params).promise()
+            .then(data => {
+                var setRoleParams = {
+                    IdentityPoolId: data.IdentityPoolId,
+                    Roles: {
+                        authenticated: iamRole,
+                        unauthenticated: iamRole
+                    }
+                }
+                return cognitoidentity.setIdentityPoolRoles(setRoleParams).promise()
+            })
     }
 
-    function deleteIdentityPool(poolId){
-      var params = {
-          IdentityPoolId: poolId
-      };
-      cognitoidentity.deleteIdentityPool(params).promise()
-      .then(data => respond(SUCCESS, data))
-      .catch(error => respond(FAILED, {message: error}));
+    function deleteIdentityPool(poolId) {
+        var params = {
+            IdentityPoolId: poolId
+        };
+        return cognitoidentity.deleteIdentityPool(params).promise()
     }
-
-
     console.log(`Performing operation ${event.RequestType} on Cognito Identity Pool ${event.LogicalResourceId}`);
-
-    switch(event.RequestType) {
+    var handlePromise;
+    switch (event.RequestType) {
         case 'Create':
-            createIdentityPool(event.ResourceProperties.IdentityPoolName,event.ResourceProperties.IAMRole);
-        break;
+            handlePromise = createIdentityPool(event.ResourceProperties.IdentityPoolName, event.ResourceProperties.IAMRole);
+            break;
         case 'Delete':
-            deleteIdentityPool(event.PhysicalResourceId);
-        break;
+            handlePromise = deleteIdentityPool(event.PhysicalResourceId);
+            break;
         case 'Update':
-            createIdentityPool(event.ResourceProperties.IdentityPoolName,event.ResourceProperties.IAMRole);
-            deleteIdentityPool(event.PhysicalResourceId);
-        break;
+            handlePromise = createIdentityPool(event.ResourceProperties.IdentityPoolName, event.ResourceProperties.IAMRole).then(() => deleteIdentityPool(event.PhysicalResourceId));
+            break;
         default:
-            callback('Something went wrong');
-  }
+            handlePromise = Promise.reject(`Unkonwn method ${event.RequestType}`);
+    }
+    handlePromise
+        .then(data => {
+            response.send(event, context, response.SUCCESS, {
+                IdentityPoolId: data.IdentityPoolId
+            });
+        })
+        .catch(error => {
+            response.send(event, context, response.FAILED, {
+                message: error
+            });
+        });
 }
-
-
-
-exports.handler = handleIdentityPoolOperation;
