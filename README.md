@@ -2,7 +2,7 @@
 
 This one-page webapp is meant to simulate a fleet of Things in the context of [AWS IoT](https://aws.amazon.com/iot/).
 
-![Simulator Screenshot](iot-simulation.png?raw=true)
+![Simulator Screenshot](simulation/iot-simulation.png?raw=true)
 
 ## Context
 
@@ -20,7 +20,11 @@ The simulation is based on the AWS IoT runtime environment. You will need to set
 * [AWS IAM](https://aws.amazon.com/iam/): a valid IAM Role must be connected to the Cognito Identity Pool un-authenticated role.
 * [AWS IoT](https://aws.amazon.com/iot/): an IoT project must be configured, although no actual Thing or Certificate needs to be defined for the simulation to work properly.
 
-Specifically, you will need to configure the JS Client with the **Cognito Identity Pool ID** and the **IoT Custom Endpoint**.
+You can launch a pre-configured CloudFormation Stack by clicking on this button:
+
+[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=IoTWorkshop&templateURL=https://raw.githubusercontent.com/aletheia/aws-lai-iot-workshop/master/templates/aws-lai-iot-workshop-cf-template.yml)
+
+You will need to configure the JS Client with the **Cognito Identity Pool ID** and the **IoT Custom Endpoint**.
 
 You can find such parameters in the *simulation/js/main.js* file:
 
