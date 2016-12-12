@@ -1,196 +1,140 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Resources": {
-        "CognitoManagerFunctionRolePolicy": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-                "PolicyName": "aws_lai_workshop_cognito_manager_role_policy",
-                "PolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [{
-                        "Effect": "Allow",
-                        "Action": [
-                            "logs:CreateLogGroup",
-                            "logs:CreateLogStream",
-                            "logs:PutLogEvents"
-                        ],
-                        "Resource": "arn:aws:logs:*:*:*"
-                    }, {
-                        "Effect": "Allow",
-                        "Action": [
-                            "cognito-identity:CreateIdentityPool",
-                            "cognito-identity:DeleteIdentityPool",
-                            "cognito-identity:UpdateIdentityPool",
-                            "cognito-identity:SetIdentityPoolRoles"
-                        ],
-                        "Resource": "*"
-                    }]
-                },
-                "Roles": [{
-                    "Ref": "CognitoManagerFunctionRole"
-                }]
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "CognitoManagerFunctionRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "aws_lai_workshop_cognito_manager_role_policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "arn:aws:logs:*:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-identity:CreateIdentityPool",
+                "cognito-identity:DeleteIdentityPool",
+                "cognito-identity:UpdateIdentityPool",
+                "cognito-identity:SetIdentityPoolRoles"
+              ],
+              "Resource": "*"
             }
+          ]
         },
-        "CognitoManagerFunctionRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "aws_lai_workshop_cognito_manager_role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [{
-                        "Effect": "Allow",
-                        "Principal": {
-                            "Service": "lambda.amazonaws.com"
-                        },
-                        "Action": "sts:AssumeRole"
-                    }]
-                }
-            }
-        },
-        "CognitoManagerFunction": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-                "Description": "A Lambda function to handle cognito identity pool creation and deletion",
-                "FunctionName": "aws_iot_workshop_cognito_manager",
-                "Runtime": "nodejs4.3",
-                "Handler": "index.handler",
-                "Role": {
-                    "Fn::GetAtt": [
-                        "CognitoManagerFunctionRole",
-                        "Arn"
-                    ]
-                },
-                "Code": {
-                    "ZipFile": "'use strict';var response=require('cfn-response'),AWS=require('aws-sdk'),cognitoidentity=new AWS.CognitoIdentity,requestTypes=['Create','Update','Delete'];exports.handler=function(a,b){function c(f,g){return cognitoidentity.createIdentityPool({AllowUnauthenticatedIdentities:!0,IdentityPoolName:f}).promise().then(function(h){var i={IdentityPoolId:h.IdentityPoolId,Roles:{authenticated:g,unauthenticated:g}};return cognitoidentity.setIdentityPoolRoles(i).promise()})}function d(f){return cognitoidentity.deleteIdentityPool({IdentityPoolId:f}).promise()}console.log('Response body:\\n',responseBody),console.log('Performing operation '+a.RequestType+' on Cognito Identity Pool '+a.LogicalResourceId);var e;switch(a.RequestType){case'Create':e=c(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole);break;case'Delete':e=d(a.PhysicalResourceId);break;case'Update':e=c(a.ResourceProperties.IdentityPoolName,a.ResourceProperties.IAMRole).then(function(){return d(a.PhysicalResourceId)});break;default:e=Promise.reject('Unkonwn method '+a.RequestType);}e.then(function(f){response.send(a,b,response.SUCCESS,{IdentityPoolId:f.IdentityPoolId})}).catch(function(f){response.send(a,b,response.FAILED,{message:f})})};\n"
-                }
-            }
-        },
-        "CognitoIdentity": {
-            "Type": "Custom::CognitoIdentity",
-            "Properties": {
-                "ServiceToken": {
-                    "Fn::GetAtt": [
-                        "CognitoManagerFunction",
-                        "Arn"
-                    ]
-                },
-                "IdentityPoolName": "aws_lai_workshop_drones_identity_pool",
-                "IAMRole": {
-                    "Fn::GetAtt": [
-                        "CognitoManagerFunctionRole",
-                        "Arn"
-                    ]
-                }
-            }
-        },
-        "DroidsRolePolicy": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-                "PolicyName": "aws_lai_workshop_policy",
-                "PolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [{
-                        "Effect": "Allow",
-                        "Action": [
-                            "iot:Connect",
-                            "iot:Publish",
-                            "iot:Subscribe",
-                            "iot:Receive",
-                            "iot:GetThingShadow",
-                            "iot:UpdateThingShadow"
-                        ],
-                        "Resource": "*"
-                    }, {
-                        "Effect": "Allow",
-                        "Action": [
-                            "mobileanalytics:PutEvents",
-                            "cognito-sync:*",
-                            "cognito-identity:*"
-                        ],
-                        "Resource": [
-                            "*"
-                        ]
-                    }]
-                },
-                "Roles": [{
-                    "Ref": "DroidsRole"
-                }]
-            }
-        },
-        "DroidsRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "aws_lai_workshop_role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [{
-                        "Effect": "Allow",
-                        "Principal": {
-                            "Federated": "cognito-identity.amazonaws.com"
-                        },
-                        "Action": "sts:AssumeRoleWithWebIdentity"
-                    }]
-                }
-            }
-        },
-        "DroidsNotifyTopic": {
-            "Type": "AWS::SNS::Topic",
-            "Properties": {
-                "DisplayName": "SNS Topic to Notify through e-mail/sms",
-                "TopicName": "DroidsTopic"
-            }
-        },
-        "Droids": {
-            "Type": "AWS::IoT::Thing",
-            "Properties": {
-                "ThingName": "DroidSampleThing"
-            }
-        },
-        "DroidsDataSourceStream": {
-            "Type": "AWS::Kinesis::Stream",
-            "Properties": {
-                "Name": "droids-data-src-stream",
-                "ShardCount": 1
-            }
-        }
+        "Roles": [
+          {
+            "Ref": "CognitoManagerFunctionRole"
+          }
+        ]
+      }
     },
-    "Outputs": {
-        "DroidsTopicArn": {
-            "Description": "ARN of SNS topic used to notify iot things",
-            "Value": {
-                "Ref": "DroidsNotifyTopic"
+    "DroidsRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "aws_lai_workshop_policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iot:Connect",
+                "iot:Publish",
+                "iot:Subscribe",
+                "iot:Receive",
+                "iot:GetThingShadow",
+                "iot:UpdateThingShadow"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "mobileanalytics:PutEvents",
+                "cognito-sync:*",
+                "cognito-identity:*"
+              ],
+              "Resource": [
+                "*"
+              ]
             }
+          ]
         },
-        "DroidsDataSourceStreamName": {
-            "Description": "Name of the source stream for IoT data",
-            "Value": {
-                "Ref": "DroidsDataSourceStream"
+        "Roles": [
+          {
+            "Ref": "DroidsRole"
+          }
+        ]
+      }
+    },
+    "DroidsRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "aws_lai_workshop_role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity"
             }
-        },
-        "DroidsRoleName": {
-            "Description": "IAM Role associated to this workshop",
-            "Value": {
-                "Fn::GetAtt": [
-                    "DroidsRole",
-                    "Arn"
-                ]
-            }
-        },
-        "CognitoManagerFunction": {
-            "Value": {
-                "Fn::GetAtt": [
-                    "CognitoManagerFunction",
-                    "Arn"
-                ]
-            }
-        },
-        "CognitoManagerFunctionRole": {
-            "Value": {
-                "Fn::GetAtt": [
-                    "CognitoManagerFunctionRole",
-                    "Arn"
-                ]
-            }
+          ]
         }
+      }
+    },
+    "DroidsNotifyTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "SNS Topic to Notify through e-mail/sms",
+        "TopicName": "DroidsTopic"
+      }
+    },
+    "Droids": {
+      "Type": "AWS::IoT::Thing",
+      "Properties": {
+        "ThingName": "DroidSampleThing"
+      }
+    },
+    "DroidsDataSourceStream": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "droids-data-src-stream",
+        "ShardCount": 1
+      }
     }
+  },
+  "Outputs": {
+    "DroidsTopicArn": {
+      "Description": "ARN of SNS topic used to notify iot things",
+      "Value": {
+        "Ref": "DroidsNotifyTopic"
+      }
+    },
+    "DroidsDataSourceStreamName": {
+      "Description": "Name of the source stream for IoT data",
+      "Value": {
+        "Ref": "DroidsDataSourceStream"
+      }
+    },
+    "DroidsRoleName": {
+      "Description": "IAM Role associated to this workshop",
+      "Value": {
+        "Fn::GetAtt": [
+          "DroidsRole",
+          "Arn"
+        ]
+      }
+    }
+  }
 }

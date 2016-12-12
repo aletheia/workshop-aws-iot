@@ -22,7 +22,7 @@ The simulation is based on the AWS IoT runtime environment. You will need to set
 
 You can launch a pre-configured CloudFormation Stack by clicking on this button:
 
-[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=IoTWorkshop&templateURL=https://raw.githubusercontent.com/aletheia/aws-lai-iot-workshop/master/templates/aws-lai-iot-workshop-cf-template.yml)
+[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=IoTWorkshop&templateURL=https%3A%2F%2Fs3-eu-west-1.amazonaws.com%2Faws-iot-workshop.neosperience.com%2Ftemplates%2Faws-lai-iot-workshop-cf-template.yml)
 
 You will need to configure the JS Client with the **Cognito Identity Pool ID** and the **IoT Custom Endpoint**.
 

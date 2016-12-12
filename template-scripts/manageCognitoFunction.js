@@ -4,7 +4,6 @@ const AWS = require('aws-sdk');
 const cognitoidentity = new AWS.CognitoIdentity();
 const requestTypes = ['Create', 'Update', 'Delete'];
 exports.handler = (event, context, callback) => {
-    console.log('Response body:\n', responseBody);
 
     function createIdentityPool(poolId, iamRole) {
         var params = {
@@ -37,10 +36,10 @@ exports.handler = (event, context, callback) => {
             handlePromise = createIdentityPool(event.ResourceProperties.IdentityPoolName, event.ResourceProperties.IAMRole);
             break;
         case 'Delete':
-            handlePromise = deleteIdentityPool(event.PhysicalResourceId);
+            handlePromise = deleteIdentityPool(event.PhysicalResourceId,event.ResourceProperties.region);
             break;
         case 'Update':
-            handlePromise = createIdentityPool(event.ResourceProperties.IdentityPoolName, event.ResourceProperties.IAMRole).then(() => deleteIdentityPool(event.PhysicalResourceId));
+            handlePromise = createIdentityPool(event.ResourceProperties.IdentityPoolName, event.ResourceProperties.IAMRole).then(() => deleteIdentityPool(event.PhysicalResourceId,event.ResourceProperties.region));
             break;
         default:
             handlePromise = Promise.reject(`Unkonwn method ${event.RequestType}`);
