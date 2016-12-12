@@ -1,0 +1,7 @@
+{
+  "RequestType": "Create",
+  "LogicalResourceId": "aws_lai_iot_sample_pool_id",
+  "ResourceProperties":{
+      "IAMRole":"arn:aws:iam::645338391750:role/lambda_cognito_role"
+  }
+}
