@@ -126,6 +126,10 @@ Drone.prototype.checkPosition = function() {
 
 };
 
+Drone.prototype.getTemperature = function() {
+    return Math.floor(Math.random() * 20) + 10;  // btw +10 and +30 (°C)
+};
+
 Drone.prototype.alarm = function() {
     this.$el.stop(true, false).addClass('alarm');
     this.xSpeed = this.ySpeed = 0;

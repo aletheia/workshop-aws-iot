@@ -57,6 +57,7 @@
                 YPosition: drone.getY(),
                 XSpeed: drone.xSpeed,
                 YSpeed: drone.ySpeed,
+                Temperature: drone.getTemperature(),
                 IrrigationPower: drone.power
             };
             var message = new Paho.MQTT.Message(JSON.stringify(msgBody));
@@ -94,13 +95,3 @@
     }
 
 })(window.jQuery);
-
-    {
-        "XPosition": 100,
-        "YPosition": 200,
-        "XSpeed": +20,
-        "YSpeed": -10,
-        "IrrigationPower": 3
-    }
-
-    
