@@ -4,10 +4,10 @@
 (function($) {
 
     // Initialize credentials and endpoints
-    var AWS_IOT_ENDPOINT = 'a12wz92qv4u9mv.iot.eu-west-1.amazonaws.com';
+    var AWS_IOT_ENDPOINT = 'YOUR_IOT_ENDPOINT';
     AWS.config.region = 'eu-west-1';
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'eu-west-1:230a1e39-8a92-45cd-98db-a051f6812e74',
+        IdentityPoolId: 'YOUR_COGNITO_POOL_ID',
     });
 
     AWS.config.credentials.get(function(err) {
@@ -94,3 +94,13 @@
     }
 
 })(window.jQuery);
+
+    {
+        "XPosition": 100,
+        "YPosition": 200,
+        "XSpeed": +20,
+        "YSpeed": -10,
+        "IrrigationPower": 3
+    }
+
+    
