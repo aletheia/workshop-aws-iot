@@ -121,4 +121,4 @@ You can implement such logics with AWS IoT by using a combination of the followi
 * [AWS Lambda](https://aws.amazon.com/lambda/): You can implement any custom integration with AWS Lambda, without managing any server or worrying about scaling your processing logic. You may want to connect Lambda directly with AWS IoT, or eventually pre-process and aggregate the raw data with Kinesis Analytics and then connect Lambda to the target Kinesis Stream.
 
 ## Contributors
-Many thanks to @cloudacademy that did the heavy work building the use case for this workshop.
+Many thanks to [Alex Casalboni](https://github.com/alexcasalboni) that did the heavy work building the use case for this workshop.
